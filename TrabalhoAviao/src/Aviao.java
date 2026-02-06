@@ -1,37 +1,51 @@
-
 public class Aviao {
 
-    //private int codigo;
-    private String codigo;
+    private int codigo;
     private String modelo;
     private String fabricante;
-    private int capacidadePassageiros;
+    private int capacidade;
 
-    public Aviao(String modelo, String codigo, String fabricante, int capacidadePassageiros) {
+    public Aviao(int codigo, String modelo,
+                 String fabricante, int capacidade) {
         this.codigo = codigo;
         this.modelo = modelo;
         this.fabricante = fabricante;
-        this.capacidadePassageiros = capacidadePassageiros;
+        this.capacidade = capacidade;
     }
-    public String getCodigo() {
-        return this.codigo;
+
+    public int getCodigo() {
+        return codigo;
     }
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
+
     public String getModelo() {
-        return this.modelo;
+        return modelo;
     }
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
-    }
+
     public String getFabricante() {
         return fabricante;
     }
+
+    public int getCapacidade() {
+        return capacidade;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
     public void setFabricante(String fabricante) {
         this.fabricante = fabricante;
     }
-    public int getCapacidadePassageiros() {
-        return capacidadePassageiros;
+
+    public void setCapacidade(int capacidade) {
+        this.capacidade = capacidade;
+    }
+
+    @Override
+    public String toString() {
+        return "Código: " + codigo +
+               " | Modelo: " + modelo +
+               " | Fabricante: " + fabricante +
+               " | Capacidade: " + capacidade;
     }
 }
