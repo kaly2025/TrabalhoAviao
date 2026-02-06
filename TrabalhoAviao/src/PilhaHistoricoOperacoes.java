@@ -2,9 +2,9 @@ import java.util.Stack;
 
 public class PilhaHistoricoOperacoes {
 
-    private Stack<String> historicoDeOperacoes ;
+    private Stack<String> historicoDeOperacoes;
 
-    public  PilhaHistoricoOperacoes() {
+    public PilhaHistoricoOperacoes() {
         historicoDeOperacoes = new Stack<>();
     }
 
@@ -17,10 +17,9 @@ public class PilhaHistoricoOperacoes {
             System.out.println("Histórico vazio.");
             return;
         }
-
-        System.out.println("=== HISTÓRICO ===");
-        for (String op : historicoDeOperacoes) {
-            System.out.println(op);
+        System.out.println("--- Log de Operações (Topo = Mais recente) ---");
+        for (int i = historicoDeOperacoes.size() - 1; i >= 0; i--) {
+            System.out.println(historicoDeOperacoes.get(i));
         }
     }
 
@@ -29,7 +28,8 @@ public class PilhaHistoricoOperacoes {
             System.out.println("Nada para desfazer.");
             return;
         }
-
-        System.out.println("Operação desfeita: " + historicoDeOperacoes.pop());
+        String op = historicoDeOperacoes.pop();
+        System.out.println("Registro de operação removido do histórico: " + op);
+        System.out.println("(Nota: Esta ação remove apenas o registro do log).");
     }
 }

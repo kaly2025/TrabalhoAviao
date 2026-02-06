@@ -59,4 +59,8 @@ public class Passageiro {
                 return "N tem nada";
         }
     }
+      @Override
+    public String toString() {
+        return "[" + idChegada + "] " + nome + " (" + atualPrioridade + ") - Voo: " + numeroVoo;
+    }
 }

@@ -15,10 +15,10 @@ public class GerenciamentoDeAvioes {
 
     public void listarAvioes() {
         if (avioes.isEmpty()) {
-            System.out.println("Nenhum aviao cadastrado.");
+            System.out.println(">> Nenhum avião cadastrado.");
             return;
         }
-
+        System.out.println("--- Lista de Aviões ---");
         for (Aviao a : avioes) {
             System.out.println(a);
         }
@@ -26,21 +26,23 @@ public class GerenciamentoDeAvioes {
 
     public Aviao buscarPorCodigo(String codigo) {
         for (Aviao a : avioes) {
-            if (a.getCodigo() == codigo) {
+            if (a.getCodigo().equalsIgnoreCase(codigo)) { 
                 return a;
             }
         }
         return null;
     }
 
-    public void removerAviao(String codigo) {
+    public boolean removerAviao(String codigo) {
         Aviao a = buscarPorCodigo(codigo);
         if (a != null) {
             avioes.remove(a);
-            System.out.println("Aviao removido.");
+            System.out.println(">> Avião removido com sucesso.");
+            return true; 
         } 
         else {
-            System.out.println("Aviao não encontrado.");
+            System.out.println(">> Avião não encontrado.");
+            return false;
         }
     }
 }
