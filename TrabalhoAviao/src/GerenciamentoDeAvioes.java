@@ -24,7 +24,7 @@ public class GerenciamentoDeAvioes {
         }
     }
 
-    public Aviao buscarPorCodigo(int codigo) {
+    public Aviao buscarPorCodigo(String codigo) {
         for (Aviao a : avioes) {
             if (a.getCodigo() == codigo) {
                 return a;
@@ -33,12 +33,13 @@ public class GerenciamentoDeAvioes {
         return null;
     }
 
-    public void removerAviao(int codigo) {
+    public void removerAviao(String codigo) {
         Aviao a = buscarPorCodigo(codigo);
         if (a != null) {
             avioes.remove(a);
             System.out.println("Aviao removido.");
-        } else {
+        } 
+        else {
             System.out.println("Aviao não encontrado.");
         }
     }

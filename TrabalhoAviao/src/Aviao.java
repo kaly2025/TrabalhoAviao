@@ -1,19 +1,18 @@
 public class Aviao {
 
-    private int codigo;
+    private String codigo;
     private String modelo;
     private String fabricante;
     private int capacidade;
 
-    public Aviao(int codigo, String modelo,
-                 String fabricante, int capacidade) {
+    public Aviao(String codigo, String modelo,String fabricante, int capacidade) {
         this.codigo = codigo;
         this.modelo = modelo;
         this.fabricante = fabricante;
         this.capacidade = capacidade;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 

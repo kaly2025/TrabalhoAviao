@@ -7,7 +7,8 @@ public class GerenciarSistemaAereo {
     private GerenciamentoDeAvioes gerAvioes;
     private PilhaHistoricoOperacoes historico;
 
-    private long contadorChegada;
+    private int contadorChegada;
+    
     private Scanner sc;
 
     public GerenciarSistemaAereo() {
@@ -46,7 +47,6 @@ public class GerenciarSistemaAereo {
         System.out.print("Opcao: ");
     }
 
-    /* ================= AVIÕES ================= */
 
     private void menuAvioes() {
         System.out.println("\n=== MENU AVIOES ===");
@@ -56,6 +56,7 @@ public class GerenciarSistemaAereo {
         System.out.print("Opcao: ");
 
         int op = sc.nextInt();
+        sc.nextLine();
 
         switch (op) {
             case 1 -> cadastrarAviao();
@@ -67,7 +68,7 @@ public class GerenciarSistemaAereo {
 
     private void cadastrarAviao() {
         System.out.print("Codigo: ");
-        int codigo = sc.nextInt();
+        String codigo = sc.nextLine();
         sc.nextLine();
 
         System.out.print("Modelo: ");
@@ -78,17 +79,15 @@ public class GerenciarSistemaAereo {
 
         System.out.print("Capacidade: ");
         int capacidade = sc.nextInt();
+        sc.nextLine();
 
-        gerAvioes.inserirAviao(
-                new Aviao(codigo, modelo, fabricante, capacidade)
-        );
-
-        historico.registrar("Cadastrou aviao codigo " + codigo);
+         gerAvioes.inserirAviao(new Aviao(codigo, modelo, fabricante, capacidade));
+         historico.registrar("Cadastrou aviao codigo " + codigo);
     }
 
     private void removerAviao() {
         System.out.print("Codigo do aviao: ");
-        int codigo = sc.nextInt();
+        String codigo = sc.nextLine();
         gerAvioes.removerAviao(codigo);
         historico.registrar("Removeu aviao codigo " + codigo);
     }
@@ -109,7 +108,8 @@ public class GerenciarSistemaAereo {
 
         if (op >= 1 && op <= 4) {
             cadastrarPassageiro(op);
-        } else if (op == 5) {
+        } 
+        else if (op == 5) {
             embarcarPassageiro();
         } else {
             System.out.println("Opcao invalida.");
@@ -117,6 +117,7 @@ public class GerenciarSistemaAereo {
     }
 
     private void cadastrarPassageiro(int tipo) {
+        String idChegada = "CH" + contadorChegada;
         System.out.print("Nome: ");
         String nome = sc.nextLine();
 
@@ -132,17 +133,17 @@ public class GerenciarSistemaAereo {
                 (tipo == 4) ? Prioridade.Baixa :
                 Prioridade.Baixa;
 
-        Passageiro p = new Passageiro(
-                nome, cpf, voo, prioridade, contadorChegada++
-        );
-
+        Passageiro p = new Passageiro(nome, cpf, voo, prioridade, idChegada, contadorChegada);
+        contadorChegada ++;
         if (tipo == 1) {
             filaComum.add(p);
-        } else {
+        } 
+        else {
             filaPrioritaria.add(p);
         }
 
         historico.registrar("Inseriu passageiro " + nome);
+        historico.registrar("ID: " +idChegada);
     }
 
     private void embarcarPassageiro() {
@@ -157,7 +158,8 @@ public class GerenciarSistemaAereo {
         if (p != null) {
             System.out.println("Embarcou: " + p);
             historico.registrar("Embarcou passageiro " + p.getNome());
-        } else {
+        } 
+        else {
             System.out.println("Nenhum passageiro aguardando.");
         }
     }

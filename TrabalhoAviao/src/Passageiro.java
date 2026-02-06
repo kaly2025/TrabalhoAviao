@@ -3,15 +3,16 @@ public class Passageiro {
     private String nome;
     private String cpf;
     private int numeroVoo;
-    private Prioridade prioridade;
-    private long ordemChegada;
+    private String idChegada;
+    private int ordemChegada;
+    private Prioridade atualPrioridade;
 
-    public Passageiro(String nome, String cpf, int numeroVoo,
-                      Prioridade prioridade, long ordemChegada) {
+    public Passageiro(String nome, String cpf, int numeroVoo, Prioridade prioridade, String idChegada, int ordemChegada) {
         this.nome = nome;
         this.cpf = cpf;
         this.numeroVoo = numeroVoo;
-        this.prioridade = prioridade;
+        this.atualPrioridade = prioridade;
+        this.idChegada = idChegada;
         this.ordemChegada = ordemChegada;
     }
 
@@ -28,36 +29,34 @@ public class Passageiro {
     }
 
     public Prioridade getPrioridade() {
-        return this.prioridade;
+        return this.atualPrioridade;
     }
 
-    public long getOrdemChegada() {
+    public int getOrdemChegada() {
         return this.ordemChegada;
     }
 
-    // setters apenas do que pode mudar
     public void setNumeroVoo(int numeroVoo) {
         this.numeroVoo = numeroVoo;
-    }
-
-    public void setPrioridade(Prioridade prioridade) {
-        this.prioridade = prioridade;
     }
 
     public String getInformacoes() {
         return "Nome: " + nome +
                ", CPF: " + cpf +
                ", Voo: " + numeroVoo +
-               ", Prioridade: " + prioridade;
+               ", Prioridade: " + atualPrioridade;
     }
 
-    public String toString(Prioridade prioridade) {
-        if (prioridade == Prioridade.Alta) {
-            return "[Classe:ALTA(*Vip)] " + getInformacoes();
-        } else if (prioridade == Prioridade.Media) {
-         return "[Classe:MÉDIA] " + getInformacoes();
-        } else {
-            return "[Classe:BAIXA] " + getInformacoes(); 
+    public String getAtualClasse(){
+        switch(atualPrioridade){
+            case Alta:
+                return "Primeira classe(VIP)";
+            case Media:
+                return "Classe Media";
+            case Baixa:
+                return "Classe Economica";
+            default:
+                return "N tem nada";
         }
     }
 }
