@@ -162,7 +162,6 @@ public class GerenciarSistemaAereo {
         }
     }
     
-    // Funcionalidade que faltava
     private void exibirFilas() {
         System.out.println("\n--- FILA PRIORITÁRIA (Ordem de saída) ---");
         if (filaPrioritaria.isEmpty()) System.out.println("(Vazia)");
