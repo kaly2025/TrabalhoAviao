@@ -9,6 +9,7 @@ public class GerenciarSistemaAereo {
 
     private int contadorChegada;
     private Scanner sc;
+    private Random rand;
 
     public GerenciarSistemaAereo() {
         filaComum = new LinkedList<>();
@@ -16,6 +17,7 @@ public class GerenciarSistemaAereo {
         gerAvioes = new GerenciamentoDeAvioes();
         historico = new PilhaHistoricoOperacoes();
         contadorChegada = 1; 
+        rand = new Random();
         sc = new Scanner(System.in);
     }
 
@@ -63,7 +65,7 @@ public class GerenciarSistemaAereo {
 
         switch (op) {
             case 1 -> cadastrarAviao();
-            case 2 -> gerAvioes.listarAvioes();
+            case 2 -> listarAvioesComPassageiros();
             case 3 -> removerAviao();
             case 0 -> { return; }
             default -> System.out.println("Opção inválida.");
@@ -80,17 +82,49 @@ public class GerenciarSistemaAereo {
         System.out.print("Capacidade: ");
         int capacidade = Integer.parseInt(sc.nextLine());
 
-        gerAvioes.inserirAviao(new Aviao(codigo, modelo, fabricante, capacidade));
-        historico.registrar("Cadastrou avião: " + codigo + " (" + modelo + ")");
+        Aviao novoAviao = new Aviao(codigo, modelo, fabricante, capacidade);
+        gerAvioes.inserirAviao(novoAviao);
         System.out.println(">> Avião cadastrado com sucesso!");
+
+        historico.registrar(new Comando() {
+            @Override
+            public void desfazer() {
+                System.out.println("(Operação automática de desfeita)");
+                gerAvioes.removerAviao(codigo);
+            }
+
+            @Override
+            public String getDescricao() {
+                return "Cadastrou avião: " + codigo + " (" + modelo + ")";
+            }
+        });
     }
 
     private void removerAviao() {
-        System.out.print("Código do avião a remover: ");
+        System.out.print("Codigo do avião a remover: ");
         String codigo = sc.nextLine();
-        boolean removeu = gerAvioes.removerAviao(codigo);
-        if (removeu) {
-            historico.registrar("Removeu avião: " + codigo);
+        Aviao aviaoRemovido = gerAvioes.buscarPorCodigo(codigo);
+        
+        if (aviaoRemovido != null) {
+            boolean removeu = gerAvioes.removerAviao(codigo);
+            if (removeu) {
+                historico.registrar(new Comando() {
+                    @Override
+                    public void desfazer() {
+                       
+                        gerAvioes.inserirAviao(aviaoRemovido);
+                        System.out.println(">> Avião " + codigo + " restaurado com sucesso.");
+                    }
+
+                    @Override
+                    public String getDescricao() {
+                        return "Removeu avião: " + codigo;
+                    }
+                });
+            }
+        } 
+        else {
+            System.out.println(">> Avião não encontrado.");
         }
     }
 
@@ -116,13 +150,18 @@ public class GerenciarSistemaAereo {
     }
 
     private void cadastrarPassageiro(boolean prioritario) {
+         if(gerAvioes.isEmpty()){
+            System.out.println(">>Eh necessario cadastrar um aviao antes de registrar passageiro!");
+            return;
+        }
+
         String idChegada = "CH" + contadorChegada;
         System.out.print("Nome do Passageiro: ");
         String nome = sc.nextLine();
         System.out.print("CPF: ");
         String cpf = sc.nextLine();
-        System.out.print("Número do Voo: ");
-        int voo = Integer.parseInt(sc.nextLine());
+        int voo = 1000 + rand.nextInt(9000);
+        System.out.println("Número do Voo: " + voo);
 
         Prioridade prioridade = Prioridade.Baixa; 
         
@@ -132,35 +171,149 @@ public class GerenciarSistemaAereo {
             prioridade = (p == 1) ? Prioridade.Alta : Prioridade.Media;
         }
 
-        Passageiro p = new Passageiro(nome, cpf, voo, prioridade, idChegada, contadorChegada);
-        contadorChegada++;
+        gerAvioes.listarAvioes();
+            System.out.print("Digite o Codigo do aviao que o passageiro vai embarcar: ");
+            String cod = sc.nextLine();
 
-        if (prioridade == Prioridade.Baixa) {
-            filaComum.add(p);
-        } else {
-            filaPrioritaria.add(p);
+        Aviao aviao = gerAvioes.buscarPorCodigo(cod);
+            if (aviao == null) {
+                System.out.println(">> Avião não encontrado.");
+                return;
+            }
+        
+        int passageirosNoAviao = contarPassageirosDoAviao(aviao.getCodigo());
+
+        if (passageirosNoAviao >= aviao.getCapacidade()) {
+            System.out.println(">> Avião " + aviao.getCodigo() + " está LOTADO!");
+            System.out.println(">> Capacidade: " + aviao.getCapacidade());
+            System.out.println(">> Passageiros aguardando: " + passageirosNoAviao);
+            return;
         }
 
-        historico.registrar("Venda de passagem: " + nome + " (" + prioridade + ")");
-        System.out.println(">> Passagem vendida! ID: " + idChegada);
+        Passageiro p = new Passageiro(nome, cpf, voo, prioridade, idChegada, contadorChegada, aviao.getCodigo());
+        contadorChegada++;
+
+        Collection<Passageiro> filaDestino; 
+        if (prioridade == Prioridade.Baixa) {
+            filaComum.add(p);
+            filaDestino = filaComum;
+        } 
+        else {
+            filaPrioritaria.add(p);
+            filaDestino = filaPrioritaria;
+        }
+        System.out.println(">> Passagem vendida! ID: " + idChegada + "| Para o aviao: " + aviao.getCodigo());
+        
+        historico.registrar(new Comando() {
+            @Override
+            public void desfazer() {
+                filaDestino.remove(p);
+                contadorChegada--; 
+                System.out.println(">> Passagem de " + nome + " cancelada e removida da fila.");
+            }
+
+            @Override
+            public String getDescricao() {
+                return "Venda de passagem: " + nome + " (" + p.getPrioridade() + ")";
+            }
+        });
     }
+
+
 
     private void embarcarPassageiro() {
         Passageiro p = null;
+        boolean eraPrioritario = false;
 
         if (!filaPrioritaria.isEmpty()) {
             p = filaPrioritaria.poll();
+            eraPrioritario = true;
         } else if (!filaComum.isEmpty()) {
             p = filaComum.poll();
+            eraPrioritario = false;
         }
 
         if (p != null) {
-            System.out.println(">> EMBARCANDO: " + p);
-            historico.registrar("Embarcou passageiro: " + p.getNome());
-        } else {
+            System.out.println(">> EMBARCANDO: " + p.getNome() + " | Avião: " + p.getCodigoAviao());
+            final Passageiro passageiroEmbarcado = p;
+            final boolean veioDaPrioritaria = eraPrioritario;
+
+            historico.registrar(new Comando() {
+                @Override
+                public void desfazer() {
+                    if (veioDaPrioritaria) {
+                        filaPrioritaria.add(passageiroEmbarcado); 
+                    } 
+                    else {
+                        ((LinkedList<Passageiro>) filaComum).addFirst(passageiroEmbarcado);
+                    }
+                    System.out.println(">> Desembarque forçado: " + passageiroEmbarcado.getNome() + " retornou à fila.");
+                }
+
+                @Override
+                public String getDescricao() {
+                    return "Embarcou passageiro: " + passageiroEmbarcado.getNome();
+                }
+            });
+
+        } 
+        else {
             System.out.println(">> Não há passageiros aguardando embarque.");
         }
     }
+    private void listarAvioesComPassageiros() {
+        if (gerAvioes.isEmpty()) {
+            System.out.println(">> Nenhum avião cadastrado.");
+            return;
+        }
+
+        for (Aviao a : gerAvioes.getAvioes()) {
+            System.out.println("\n" + a);
+
+            boolean achou = false;
+
+            System.out.println("  Passageiros na fila PRIORITÁRIA:");
+            for (Passageiro p : filaPrioritaria) {
+                if (p.getCodigoAviao().equalsIgnoreCase(a.getCodigo())) {
+                    System.out.println("   - " + p);
+                    achou = true;
+                }
+            }
+
+            System.out.println("  Passageiros na fila COMUM:");
+            for (Passageiro p : filaComum) {
+                if (p.getCodigoAviao().equalsIgnoreCase(a.getCodigo())) {
+                    System.out.println("   - " + p);
+                    achou = true;
+                }
+            }
+
+            if (!achou) {
+                System.out.println("  (Nenhum passageiro aguardando embarque)");
+            }
+        }
+    }
+
+    private int contarPassageirosDoAviao(String codigoAviao) {
+        int total = 0;
+
+        for (Passageiro p : filaComum) {
+            if (p.getCodigoAviao().equalsIgnoreCase(codigoAviao)) {
+                total++;
+            }
+        }
+
+        for (Passageiro p : filaPrioritaria) {
+            if (p.getCodigoAviao().equalsIgnoreCase(codigoAviao)) {
+                total++;
+            }
+        }
+
+        return total;
+    }
+
+
+
     
     private void exibirFilas() {
         System.out.println("\n--- FILA PRIORITÁRIA (Ordem de saída) ---");

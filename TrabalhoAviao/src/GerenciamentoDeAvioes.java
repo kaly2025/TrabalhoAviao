@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +32,13 @@ public class GerenciamentoDeAvioes {
             }
         }
         return null;
+    }
+    public List<Aviao> getAvioes() {
+        return Collections.unmodifiableList(avioes);
+    }
+
+    public boolean isEmpty(){
+        return avioes.isEmpty();
     }
 
     public boolean removerAviao(String codigo) {

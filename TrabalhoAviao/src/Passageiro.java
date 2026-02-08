@@ -6,14 +6,16 @@ public class Passageiro {
     private String idChegada;
     private int ordemChegada;
     private Prioridade atualPrioridade;
+    private String codigoAviao;
 
-    public Passageiro(String nome, String cpf, int numeroVoo, Prioridade prioridade, String idChegada, int ordemChegada) {
+    public Passageiro(String nome, String cpf, int numeroVoo, Prioridade prioridade, String idChegada, int ordemChegada, String codigoAviao) {
         this.nome = nome;
         this.cpf = cpf;
         this.numeroVoo = numeroVoo;
         this.atualPrioridade = prioridade;
         this.idChegada = idChegada;
         this.ordemChegada = ordemChegada;
+        this.codigoAviao = codigoAviao;
     }
 
     public String getNome() {
@@ -45,6 +47,10 @@ public class Passageiro {
                ", CPF: " + cpf +
                ", Voo: " + numeroVoo +
                ", Prioridade: " + atualPrioridade;
+    }
+
+    public String getCodigoAviao(){
+        return codigoAviao;
     }
 
     public String getAtualClasse(){
